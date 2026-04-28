@@ -53,5 +53,34 @@ plt.savefig(os.path.join(BASE_DIR, "..", "output", "plots", "pts_trends.png"))
 plt.close() 
 
 
+#plot line graph showing the pace stat of the highest and lowest SRS teams for each season
+highest_srs = nba_data.loc[nba_data.groupby("season")["SRS"].idxmax()]
+lowest_srs = nba_data.loc[nba_data.groupby("season")["SRS"].idxmin()]
+plt.figure(figsize=(12, 6))
+plt.plot(highest_srs["season"], highest_srs["PACE"], label="Highest SRS Team", color="green")
+plt.plot(lowest_srs["season"], lowest_srs["PACE"], label="Lowest SRS Team", color="red")
+plt.xlabel("Season")
+plt.ylabel("Pace")
+plt.title("Pace of Highest vs Lowest SRS Teams per Season")
+plt.legend()
+plt.grid()
+plt.savefig(os.path.join(BASE_DIR, "..", "output", "plots", "pace_extremes.png"))
+plt.close()   
+
+
+#plot line graph showing the 3PA stat of the highest and lowest SRS teams for each season
+plt.figure(figsize=(12, 6))
+plt.plot(highest_srs["season"], highest_srs["3PA"], label="Highest SRS Team", color="green")
+plt.plot(lowest_srs["season"], lowest_srs["3PA"], label="Lowest SRS Team", color="red")
+plt.xlabel("Season")
+plt.ylabel("3PA")
+plt.title("3PA of Highest vs Lowest SRS Teams per Season")
+plt.legend()
+plt.grid()
+plt.savefig(os.path.join(BASE_DIR, "..", "output", "plots", "3pa_extremes.png"))
+plt.close()
+
+
+
 
 
