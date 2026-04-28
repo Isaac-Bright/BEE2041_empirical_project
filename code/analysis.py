@@ -82,5 +82,14 @@ plt.close()
 
 
 
-
-
+#2 scatter plot that shows the relationship betwee SRS (y) and 3pa (x) 
+plt.figure(figsize=(12, 6))
+plt.scatter(playoff_data["3PA"], playoff_data["SRS"], label="Playoff Teams", color="blue", alpha=0.6)
+plt.scatter(regular_data["3PA"], regular_data["SRS"], label="Non-Playoff Teams", color="orange", alpha=0.6)
+plt.xlabel("3PA")
+plt.ylabel("SRS")
+plt.title("SRS vs 3PA: Playoff vs Non-Playoff Teams")
+plt.legend()
+plt.grid()
+plt.savefig(os.path.join(BASE_DIR, "..", "output", "plots", "srs_vs_3pa.png"))
+plt.close()

@@ -14,6 +14,11 @@ BASE = "https://www.basketball-reference.com"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT = os.path.join(BASE_DIR, "..", "data", "raw_nba.csv")
 
+ADVANCED_TABLE_IDS = ["advanced-team", "misc_stats"]
+PER_GAME_TABLE_IDS = ["per_game-team", "team-stats-per_game"]
+
+
+# ── HELPERS ───────────────────────────────────────────────────────────────────
 
 def fetch(url):
     try:
@@ -44,11 +49,71 @@ def get_table(soup, table_id):
         return None
 
 
+def get_first_table(soup, table_ids):
+    """Try a list of table IDs and return the first one that exists."""
+    for tid in table_ids:
+        df = get_table(soup, tid)
+        if df is not None and not df.empty:
+            return df, tid
+    return None, None
+
+
 def find_team_col(df):
     if df is None or df.empty:
         return None
-    return next((c for c in df.columns if str(c).endswith("Team")), None)
+    # Exact known names
+    for candidate in ["Team", "Tm", "Franchise", "School"]:
+        if candidate in df.columns:
+            return candidate
+    # Flattened MultiIndex ending in known names
+    for c in df.columns:
+        if str(c).endswith((" Team", " Tm")):
+            return c
+    return None
 
+
+def clean_team_col(df, col):
+    """Drop non-team rows (repeated headers, totals, nulls) and cast col to str."""
+    df = df.copy()
+    df[col] = df[col].astype(str).str.strip()
+    junk = {"nan", "", "Team", "Tm", "League Average"}
+    df = df[~df[col].isin(junk)]
+    df = df[~df[col].str.match(r"^\d+$")]
+    return df
+
+
+def build_merged(advanced, per_game, season, phase):
+    adv_team_col = find_team_col(advanced)
+    pg_team_col  = find_team_col(per_game)
+
+    if advanced is not None and adv_team_col:
+        advanced = clean_team_col(advanced, adv_team_col)
+        advanced = advanced.rename(columns={adv_team_col: "Team"})
+        advanced["season"] = season
+
+    if per_game is not None and pg_team_col:
+        per_game = clean_team_col(per_game, pg_team_col)
+        per_game = per_game.rename(columns={pg_team_col: "Team"})
+        per_game["season"] = season
+
+    if advanced is not None and adv_team_col and per_game is not None and pg_team_col:
+        merged = advanced.merge(
+            per_game, on=["Team", "season"],
+            suffixes=("_adv", "_pg"), how="outer"
+        )
+    elif advanced is not None and adv_team_col:
+        merged = advanced
+    elif per_game is not None and pg_team_col:
+        merged = per_game
+    else:
+        print(f"    [warn] could not identify team column for {season} {phase}")
+        return pd.DataFrame()
+
+    merged["phase"] = phase
+    return merged
+
+
+# ── SCRAPERS ──────────────────────────────────────────────────────────────────
 
 def scrape_regular_season(season):
     soup = fetch(f"{BASE}/leagues/NBA_{season}.html")
@@ -56,39 +121,22 @@ def scrape_regular_season(season):
         return pd.DataFrame()
     time.sleep(4)
 
-    advanced = get_table(soup, "advanced-team")
-    per_game = get_table(soup, "per_game-team")
+    advanced, _ = get_first_table(soup, ADVANCED_TABLE_IDS)
+    per_game, _ = get_first_table(soup, PER_GAME_TABLE_IDS)
 
-    adv_team_col = find_team_col(advanced)
-    pg_team_col  = find_team_col(per_game)
+    # Fallback for very old seasons that have neither
+    if advanced is None and per_game is None:
+        east = get_table(soup, "divs_standings_E")
+        west = get_table(soup, "divs_standings_W")
+        parts = [df for df in [east, west] if df is not None]
+        if parts:
+            standings = pd.concat(parts, ignore_index=True)
+            standings["season"] = season
+            standings["phase"] = "regular_season"
+            return standings
+        return pd.DataFrame()
 
-    if adv_team_col and pg_team_col:
-        advanced = advanced.rename(columns={adv_team_col: "Team"})
-        per_game = per_game.rename(columns={pg_team_col: "Team"})
-        advanced["season"] = season
-        per_game["season"] = season
-        merged = advanced.merge(per_game, on=["Team", "season"], suffixes=("_adv", "_pg"), how="outer")
-        merged["phase"] = "regular_season"
-        return merged
-
-    # Fallback to standings for SRS
-    standings = pd.DataFrame()
-    east = get_table(soup, "divs_standings_E")
-    west = get_table(soup, "divs_standings_W")
-    parts = [df for df in [east, west] if df is not None]
-    if parts:
-        standings = pd.concat(parts, ignore_index=True)
-
-    std_team_col = standings.columns[0] if not standings.empty else None
-
-    if not standings.empty and pg_team_col:
-        standings["season"] = season
-        per_game["season"]  = season
-        merged = standings.merge(per_game, left_on=[std_team_col, "season"], right_on=[pg_team_col, "season"], how="outer")
-        merged["phase"] = "regular_season"
-        return merged
-
-    return pd.DataFrame()
+    return build_merged(advanced, per_game, season, "regular_season")
 
 
 def scrape_playoffs(season):
@@ -97,35 +145,17 @@ def scrape_playoffs(season):
         return pd.DataFrame()
     time.sleep(4)
 
-    advanced = get_table(soup, "advanced-team")
-    per_game = get_table(soup, "per_game-team")
+    advanced, _ = get_first_table(soup, ADVANCED_TABLE_IDS)
+    per_game, _ = get_first_table(soup, PER_GAME_TABLE_IDS)
 
-    adv_team_col = find_team_col(advanced)
-    pg_team_col  = find_team_col(per_game)
+    if advanced is None and per_game is None:
+        print(f"    [warn] no recognisable tables found for {season} playoffs")
+        return pd.DataFrame()
 
-    if adv_team_col and pg_team_col:
-        advanced = advanced.rename(columns={adv_team_col: "Team"})
-        per_game = per_game.rename(columns={pg_team_col: "Team"})
-        advanced["season"] = season
-        per_game["season"] = season
-        merged = advanced.merge(per_game, on=["Team", "season"], suffixes=("_adv", "_pg"), how="outer")
-        merged["phase"] = "playoffs"
-        return merged
-    elif adv_team_col:
-        advanced = advanced.rename(columns={adv_team_col: "Team"})
-        advanced["season"] = season
-        advanced["phase"]  = "playoffs"
-        return advanced
-    elif pg_team_col:
-        per_game = per_game.rename(columns={pg_team_col: "Team"})
-        per_game["season"] = season
-        per_game["phase"]  = "playoffs"
-        return per_game
-
-    return pd.DataFrame()
+    return build_merged(advanced, per_game, season, "playoffs")
 
 
-# ── MAIN ─────────────────────────────────────────────────────────────────────
+# ── MAIN ──────────────────────────────────────────────────────────────────────
 
 all_frames = []
 
