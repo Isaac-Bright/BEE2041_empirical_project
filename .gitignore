@@ -1,2 +1,15 @@
-data/
-plots/ 
+# ignore the raw data from scraping 
+data/raw_league_averages.csv
+
+
+# ignore cleaned csvs
+data/clean_league_averages.csv
+data/clean_team_stats.csv
+
+
+# ignore plots 
+plots/
+
+
+# ignore virtual environment
+nba_env/

@@ -1,3 +1,4 @@
+# scraping.py
 import pandas as pd
 import cloudscraper
 import time
@@ -9,99 +10,88 @@ scraper = cloudscraper.create_scraper(
 )
 
 SEASONS = range(1950, 2026)
-BASE = "https://www.basketball-reference.com"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-OUT_SEASON = os.path.join(BASE_DIR, "..", "data", "season_averages.csv")
-OUT_TEAM   = os.path.join(BASE_DIR, "..", "data", "team_reg_season.csv")
+OUT = os.path.join(BASE_DIR, "..", "data", "raw_team_stats.csv")
 
 
 def fetch_tables(url):
     try:
         r = scraper.get(url, timeout=15)
+        print(f"  {url.split('/')[-1]} → {r.status_code}")
         if r.status_code != 200:
-            print(f"  [skip] {url} → {r.status_code}")
             return []
         html = r.text.replace("<!--", "").replace("-->", "")
         tables = pd.read_html(io.StringIO(html))
-        # Flatten any MultiIndex columns
+        cleaned = []
         for t in tables:
+            # Flatten MultiIndex columns to their last level
             if isinstance(t.columns, pd.MultiIndex):
-                t.columns = [" ".join(str(c) for c in col).strip() for col in t.columns]
+                t.columns = [col[-1] for col in t.columns]
             else:
                 t.columns = [str(c) for c in t.columns]
-        return tables
+            cleaned.append(t)
+        return cleaned
     except Exception as e:
-        print(f"  [error] {url}: {e}")
+        print(f"  [error] {e}")
         return []
 
 
-def find_league_avg_row(tables):
-    """Return the League Average row from whichever table contains it."""
-    for t in tables:
-        mask = t.isin(["League Average"]).any(axis=1)
-        if mask.any():
-            return t[mask].iloc[0].to_dict()
-    return None
+def has_col(df, name):
+    return name in df.columns
 
 
-def find_team_table(tables):
-    """Return the per-game team table (has Team/Tm column and PTS)."""
-    for t in tables:
-        team_col = next((c for c in t.columns if c in ["Team", "Tm"]), None)
-        if team_col and "PTS" in t.columns:
-            return t, team_col
-    return None, None
+def clean_teams(df):
+    team_col = next((c for c in df.columns if c in ["Team", "Tm"]), None)
+    if team_col is None:
+        return None
+    df = df.copy().rename(columns={team_col: "Team"})
+    df["Team"] = df["Team"].astype(str).str.strip()
+    junk = {"League Average", "nan", "", "Team", "Tm"}
+    df = df[~df["Team"].isin(junk)]
+    df = df[~df["Team"].str.match(r"^\d+$")]
+    return df
 
 
-season_rows = []
 team_frames = []
 
 for season in SEASONS:
     print(f"Fetching {season}...")
-
-    # ── Regular season ────────────────────────────────────────────────────────
-    tables = fetch_tables(f"{BASE}/leagues/NBA_{season}.html")
+    tables = fetch_tables(f"https://www.basketball-reference.com/leagues/NBA_{season}.html")
     time.sleep(4)
 
-    row = find_league_avg_row(tables)
-    if row:
-        row["season"] = season
-        row["phase"] = "regular_season"
-        season_rows.append(row)
-        print(f"  ✓ reg season avg")
+    per_game = None
+    advanced = None
+
+    for t in tables:
+        t = clean_teams(t)
+        if t is None:
+            continue
+        if has_col(t, "PTS") and has_col(t, "3PA") and per_game is None:
+            per_game = t
+        if (has_col(t, "Pace") or has_col(t, "SRS")) and advanced is None:
+            advanced = t
+
+    if per_game is None and advanced is None:
+        print(f"  ✗ no usable tables")
+        continue
+
+    # Build merged — per_game provides 3PA, advanced provides Pace/SRS
+    # Either can be missing for old seasons
+    if per_game is not None and advanced is not None:
+        pg_cols  = ["Team"] + [c for c in ["3PA"] if c in per_game.columns]
+        adv_cols = ["Team"] + [c for c in ["Pace", "SRS"] if c in advanced.columns]
+        merged = per_game[pg_cols].merge(advanced[adv_cols], on="Team", how="outer")
+    elif per_game is not None:
+        merged = per_game[["Team"] + [c for c in ["3PA"] if c in per_game.columns]]
     else:
-        print(f"  ✗ no reg season avg")
+        merged = advanced[["Team"] + [c for c in ["Pace", "SRS"] if c in advanced.columns]]
 
-    t, team_col = find_team_table(tables)
-    if t is not None:
-        t = t.copy()
-        junk = {"League Average", "nan", ""}
-        t = t[~t[team_col].astype(str).str.strip().isin(junk)]
-        t = t.dropna(subset=[team_col])
-        t["season"] = season
-        team_frames.append(t)
-        print(f"  ✓ team data: {len(t)} teams")
-    else:
-        print(f"  ✗ no team data")
-
-    # ── Playoffs ──────────────────────────────────────────────────────────────
-    tables = fetch_tables(f"{BASE}/playoffs/NBA_{season}.html")
-    time.sleep(4)
-
-    row = find_league_avg_row(tables)
-    if row:
-        row["season"] = season
-        row["phase"] = "playoffs"
-        season_rows.append(row)
-        print(f"  ✓ playoff avg")
-    else:
-        print(f"  ✗ no playoff avg")
-
-os.makedirs(os.path.dirname(OUT_SEASON), exist_ok=True)
-
-pd.DataFrame(season_rows).to_csv(OUT_SEASON, index=False)
-print(f"\nSaved season averages → {OUT_SEASON}")
+    merged["season"] = season
+    team_frames.append(merged)
+    print(f"  ✓ {season}: {len(merged)} teams")
 
 if team_frames:
-    pd.concat(team_frames, ignore_index=True).to_csv(OUT_TEAM, index=False)
-    print(f"Saved team data → {OUT_TEAM}")
+    out = pd.concat(team_frames, ignore_index=True)
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    out.to_csv(OUT, index=False)
+    print(f"\nSaved {len(out)} rows → {OUT}")
