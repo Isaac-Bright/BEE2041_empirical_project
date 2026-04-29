@@ -1,6 +1,5 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
-import numpy as np
 import os   
 
 
@@ -14,7 +13,7 @@ nba_data = pd.read_csv(INPUT)
 
 #create visualisation for average pace per season over time for playoff teams vs non-playoff teams
 playoff_data = nba_data[nba_data["playoffs"]]
-regular_data = nba_data[~nba_data["playoffs"]]
+regular_data = nba_data[~nba_data["playoffs"]] 
 plt.figure(figsize=(12, 6))
 plt.plot(playoff_data["season"], playoff_data["PACE"], label="Playoff Teams", color="blue")
 plt.plot(regular_data["season"], regular_data["PACE"], label="Non-Playoff Teams", color="orange")
@@ -24,7 +23,7 @@ plt.title("Average Pace per Season: Playoff vs Non-Playoff Teams")
 plt.legend()
 plt.grid()
 plt.savefig(os.path.join(BASE_DIR, "..", "output", "plots", "pace_trends.png"))
-plt.close()     
+plt.close()  
 
 
 #doing the same for average 3 point attemtps per game for each season
@@ -79,7 +78,6 @@ plt.legend()
 plt.grid()
 plt.savefig(os.path.join(BASE_DIR, "..", "output", "plots", "3pa_extremes.png"))
 plt.close()
-
 
 
 #2 scatter plot that shows the relationship betwee SRS (y) and 3pa (x) 
