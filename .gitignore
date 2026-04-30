@@ -7,9 +7,5 @@ data/clean_league_averages.csv
 data/clean_team_stats.csv
 
 
-# ignore plots 
-plots/
-
-
 # ignore virtual environment
 nba_env/
