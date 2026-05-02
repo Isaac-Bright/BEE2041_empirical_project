@@ -1,11 +1,15 @@
 # ignore the raw data from scraping 
 data/raw_league_averages.csv
 
-
 # ignore cleaned csvs
 data/clean_league_averages.csv
 data/clean_team_stats.csv
 
+# ignore figures 
+figures/
 
 # ignore virtual environment
 nba_env/
+
+# ignore quarto output
+report/blog.pdf

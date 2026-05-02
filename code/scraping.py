@@ -1,4 +1,3 @@
-# scraping.py
 import pandas as pd
 import cloudscraper
 import time
@@ -72,7 +71,7 @@ for season in SEASONS:
             advanced = t
 
     if per_game is None and advanced is None:
-        print(f"  ✗ no usable tables")
+        print("  ✗ no usable tables")
         continue
 
     # Build merged — per_game provides 3PA, advanced provides Pace/SRS
