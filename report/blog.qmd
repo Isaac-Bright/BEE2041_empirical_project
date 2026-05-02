@@ -2,9 +2,6 @@
 title: "What has Stephen Curry and the ‘91 Nuggets done to the modern NBA?"
 author: "Isaac Bright"
 format:
-  html:
-    self-contained: true
-    toc: true
   pdf:
     toc: true
 ---
@@ -12,7 +9,7 @@ format:
 
 ## Introduction 
 
-There are often claims that the NBA has become much quicker and more of a “3 point game”, this is frequently credited (or blamed, depending on your point of view) to Stephen Curry and the dynasty that he helped create, as well as the ‘91 Denver Nuggets and their 7-second-quick-strike system. This project will investigate if these claims are correct and if so how this has affected performance of teams. To answer this visualisations will be made from data scraped from Data sourced from [Basketball Reference](https://www.basketball-reference.com)in accordance with their terms of service. 
+There are often claims that the NBA has become much quicker and more of a “3 point game”, this is frequently credited (or blamed, depending on your point of view) to Stephen Curry and the dynasty that he helped create, as well as the ‘91 Denver Nuggets and their 7-second-quick-strike system. This project will investigate if these claims are correct and if so how this has affected performance of teams. To answer this visualisations will be made from data scraped from Data sourced from [Basketball Reference](https://www.basketball-reference.com) in accordance with their terms of service. 
 
 
 ## Trends in the NBA 
@@ -99,8 +96,11 @@ The league has changed a lot over its history for many different reasons. The mo
 ## References
 
 Basketball Reference. (n.d.). Basketball statistics and history | basketball-reference.com. Basketball-Reference.com. [https://www.basketball-reference.com/](https://www.basketball-reference.com/)
+
 Blackport, D. (2018, April 18). Digging deeper into pace in the NBA. Less Certainty, More Inquiry. [https://darrylblackport.com/posts/2018-04-18-digging-deeper-pace/](https://darrylblackport.com/posts/2018-04-18-digging-deeper-pace/)
+
 Hollinger, J. (2026, April 23). Scoring is way down in the NBA playoffs. here are the 3 possible reasons why. The New York Times. [https://www.nytimes.com/athletic/7220778/2026/04/23/scoring-down-nba-playoffs-2026/](https://www.nytimes.com/athletic/7220778/2026/04/23/scoring-down-nba-playoffs-2026/)
+
 Tran, N. (2025, April 25). The history of 7 seconds or less. Substack.com; The Old Man Game Newsletter. [https://omgnewsletter.substack.com/p/the-history-of-7-seconds-or-less](https://omgnewsletter.substack.com/p/the-history-of-7-seconds-or-less)
 
 
