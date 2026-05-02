@@ -9,7 +9,7 @@ data/clean_team_stats.csv
 figures/
 
 # ignore virtual environment
-nba_env/
+nba-env/
 
 # ignore quarto output
 report/blog.pdf
