@@ -57,7 +57,7 @@ Overall these figures show that in recent years the NBA has trended away from ph
 
 Now we have established some of the trends that the NBA is following, we can ask are the good teams utilising these strategies and is this what makes them good teams? To determine if a team is good or now I will be using the Simple Rating System (SRS). This allows us to evaluate a team’s performance by combing average point differential and Strength of Schedule (SOS). An SRS value of 0 represents the most average team in the league and a score of 10 for example, represents a team that is 10 points better than this average. Because of this SRS can also be negative showing a team that is worse than average. SRS is a better way of measuring a team’s true performance than a raw win loss ratio because it is less affected by things like injuries and home court advantage. This being said it can still be fooled by teams coasting and saving their strength for the playoffs since it is a metric primarily used for the regular season. 
 
-![figure 4](../figures/fig4_pace_best_worst.png.png)
+![figure 4](../figures/fig4_pace_best_worst.png)
 *Figure 4*
 
 Figure 4 shows the best and worst teams for each season and their pace stats. The shape of the graph generally follows a similar shape as figure 2 with only a few exceptions. This shows that for the most part teams have not had disproportional success or failure from diverting from the league trend – be that playing more quickly or slowly. 
@@ -74,7 +74,7 @@ Overall this doesn’t show consistently that top teams have a higher pace stat 
 
 Figure 5 shows the best and worst teams average 3-point attempts in each game. This graph follows the corresponding league average graph just like figure 4 does. However, the green line in figure 5 is consistently higher than the red line. 
 
-![figure 6](../figures/fig6_3pa_best_worst_table.png.png)
+![figure 6](../figures/fig6_3pa_best_worst_table.png)
 *Figure 6*
 
 In fact, 71.7% of seasons have the best team above the worst team when it comes to 3-point attempts, this jumps up to 75% when only looking at seasons since 2010. This is indicative of good teams using a more 3-point oriented strategy.
