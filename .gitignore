@@ -6,7 +6,7 @@ data/clean_league_averages.csv
 data/clean_team_stats.csv
 
 # ignore figures 
-figures/
+figures/*.png
 
 # ignore virtual environment
 nba-env/
