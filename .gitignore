@@ -1,5 +1,5 @@
 # ignore the raw data from scraping 
-data/raw_league_averages.csv
+data/raw_team_stats.csv
 
 # ignore cleaned csvs
 data/clean_league_averages.csv
