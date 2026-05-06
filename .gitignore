@@ -10,6 +10,3 @@ figures/*.png
 
 # ignore virtual environment
 nba-env/
-
-# ignore quarto output
-report/blog.pdf

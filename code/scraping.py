@@ -8,7 +8,7 @@ scraper = cloudscraper.create_scraper(
     browser={"browser": "chrome", "platform": "linux", "mobile": False}
 )
 
-SEASONS = range(1950, 2026)
+SEASONS = range(1947, 2026)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(BASE_DIR, "..", "data", "raw_team_stats.csv")
 

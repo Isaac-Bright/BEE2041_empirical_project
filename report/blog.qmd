@@ -9,7 +9,7 @@ format:
 
 ## Introduction 
 
-There are often claims that the NBA has become much quicker and more of a “3 point game”, this is frequently credited to (or blamed on, depending on your point of view) Stephen Curry (for example Abbot (2016) and Weiss (2026)) and the dynasty that he helped create, as well as the ‘91 Denver Nuggets and their 7-second-quick-strike system. This project will investigate if these claims are correct and if so how this has affected performance of teams. To answer this, visualisations will be made from data scraped from https://www.basketball-reference.com/ in accordance with their terms of service. 
+There are often claims that the NBA has become much quicker and more of a “3 point game”, this is frequently credited to (or blamed on, depending on your point of view) Stephen Curry (for example Abbot (2016) and Weiss (2026)) and the dynasty that he helped create, as well as the ‘91 Denver Nuggets and their 7-second-quick-strike system. This project will investigate if these claims are correct and if so how this has affected performance of teams. To answer this, visualisations will be made from data scraped from [Basketball Reference](https://www.basketball-reference.com/) in accordance with their terms of service. 
 
 ## Trends in the NBA 
 
