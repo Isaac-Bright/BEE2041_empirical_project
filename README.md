@@ -37,8 +37,8 @@ Also requires:
 
  ```bash
 git clone https://github.com/Isaac-Bright/BEE2041_empirical_project
-python3 -m venv nba-env 
 cd BEE2041_empirical_project 
+python3 -m venv nba-env 
 source nba-env/bin/activate 
 pip install -r requirements.txt
 make
