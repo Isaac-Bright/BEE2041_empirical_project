@@ -30,6 +30,7 @@ Also requires:
 * [Quarto](https://quarto.org/docs/get-started/) 1.5+
 * TinyTex (‘*quarto install tinytex*’)
 * Make
+* Linux command line (windows users should use WSL)
 
 
 ## Installation 
@@ -38,7 +39,7 @@ Also requires:
 git clone https://github.com/Isaac-Bright/BEE2041_empirical_project
 python3 -m venv nba-env 
 cd BEE2041_empirical_project 
-source nba-env/bin/activate  # on Windows: nba-env\Scripts\activate
+source nba-env/bin/activate 
 pip install -r requirements.txt
 make
 ```
