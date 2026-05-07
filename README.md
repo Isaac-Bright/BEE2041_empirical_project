@@ -8,7 +8,7 @@ This project is a data-driven blog post that attempts to answer the question: wh
 Data was downloaded and scraped from [Basketball Reference](https://www.basketball-reference.com/) in accordance with their terms of service ([data_use.html](https://www.sports-reference.com/data_use.html)) and rate limits ([bot-traffic.html](https://www.sports-reference.com/bot-traffic.html)). None of the pages accessed are disallowed under the User-agent: * section of the robots.txt file. 
 
 Two datasets are used:
-* *League averages* - downloaded manually from [NBA Stats Per Game page](https://www.basketball-reference.com/leagues/NBA_stats_per_game.html) (as it is only 2 tables) and committed to the repo. Running ‘make’ does not re-download this file .
+* *League averages* - downloaded manually from [NBA Stats Per Game page](https://www.basketball-reference.com/leagues/NBA_stats_per_game.html) (as it is only 2 tables) and committed to the repo. Running ‘make’ does not re-download this file.
 * *Team averages* –  data is from many different pages so is scraped using code/scraping.py and is not committed. Running ‘make’ creates a csv of this raw data (data/raw_team_stats.csv).
 
 
