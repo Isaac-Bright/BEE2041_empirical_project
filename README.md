@@ -24,6 +24,7 @@ Requirements.txt has only the names of the python packages to prevent issues on 
 * numpy==2.4.4
 * matplotlib==3.10.9
 * pandas==3.0.2
+* lxml==6.1.0
 
 Also requires:
 * Python 3.12+
